@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IBAN Bilgileri</title>
+<style>
+  :root { --bg:#f3f5f9; --card:#fff; --text:#1b2330; --muted:#6b7686; --line:#e3e8ef; --ok:#1a9b57; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#10141b; --card:#1a202a; --text:#eef1f6; --muted:#97a2b3; --line:#2a3342; }
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:480px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 20px; }
+  .card { display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:16px; padding:14px; margin-bottom:12px; cursor:pointer; transition:transform .1s; }
+  .card:active { transform:scale(.98); }
+  .logo { flex:none; width:56px; height:56px; border-radius:12px; display:grid; place-items:center;
+    color:#fff; font-weight:700; font-size:18px; overflow:hidden; }
+  .logo img { width:100%; height:100%; object-fit:contain; background:#fff; }
+  .info { flex:1; min-width:0; }
+  .bank { font-weight:600; font-size:16px; }
+  .holder { color:var(--muted); font-size:13px; margin-top:1px; }
+  .iban { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; margin-top:6px; word-break:break-all; }
+  .btn { flex:none; border:0; border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600;
+    background:var(--text); color:var(--bg); cursor:pointer; min-width:84px; }
+  .btn.done { background:var(--ok); color:#fff; }
+</style>
+</head>
+<body>
+<main>
+  <h1>IBAN Bilgileri</h1>
+  <p class="sub">Karta veya “Kopyala” butonuna dokunarak IBAN’ı kopyalayın.</p>
+  <div id="list"></div>
+</main>
+
+<script>
+  // ---- BURAYI DÜZENLE ----
+  // logo: banka logosunun dosya yolu/URL'si (boş bırakırsan renkli kısaltma görünür)
+  const HOLDER = "AD SOYAD";
+  const BANKS = [
+    { name:"Ziraat Bankası",  short:"Z",  color:"#d71920", logo:"", iban:"TR00 0000 0000 0000 0000 0000 00" },
+    { name:"İş Bankası",      short:"İş", color:"#1f3c88", logo:"", iban:"TR00 0000 0000 0000 0000 0000 00" },
+    { name:"Garanti BBVA",    short:"G",  color:"#00854a", logo:"", iban:"TR00 0000 0000 0000 0000 0000 00" },
+    { name:"Akbank",          short:"A",  color:"#e30613", logo:"", iban:"TR00 0000 0000 0000 0000 0000 00" },
+    { name:"Yapı Kredi",      short:"YK", color:"#004990", logo:"", iban:"TR00 0000 0000 0000 0000 0000 00" },
+  ];
+  // -------------------------
+
+  const list = document.getElementById("list");
+
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      const t = document.createElement("textarea");
+      t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (_) {}
+      t.remove();
+      return ok;
+    }
+  }
+
+  BANKS.forEach(b => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="logo" style="background:${b.color}">${b.logo ? `<img src="${b.logo}" alt="${b.name}">` : b.short}</div>
+      <div class="info">
+        <div class="bank">${b.name}</div>
+        <div class="holder">${HOLDER}</div>
+        <div class="iban">${b.iban}</div>
+      </div>
+      <button class="btn" type="button">Kopyala</button>`;
+    const btn = card.querySelector(".btn");
+    card.addEventListener("click", async () => {
+      const ok = await copyText(b.iban.replace(/\s+/g, ""));
+      btn.textContent = ok ? "Kopyalandı ✓" : "Hata";
+      btn.classList.toggle("done", ok);
+      setTimeout(() => { btn.textContent = "Kopyala"; btn.classList.remove("done"); }, 1800);
+    });
+    list.appendChild(card);
+  });
+</script>
+</body>
+</html>
