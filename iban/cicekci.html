@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IBAN Bilgileri - Çiçekçi</title>
+<style>
+  :root { --bg:#fdf3f5; --card:#fffafb; --text:#3b2a30; --muted:#8a6f77; --line:#f0d5db;
+    --accent:#d4607f; --accent2:#7a9a6d; --ok:#5f8a52; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#241a1e; --card:#2f2227; --text:#fbeef1; --muted:#c3a3ac; --line:#4a3239; --accent:#e87c9a; --accent2:#9dbb8f; --ok:#8fbf7e; }
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(circle at 10% 0%, rgba(212,96,127,.14), transparent 40%),
+               radial-gradient(circle at 100% 30%, rgba(122,154,109,.16), transparent 45%), var(--bg);
+    min-height:100vh; }
+  main { max-width:480px; margin:0 auto; padding:28px 16px 48px; }
+  header { text-align:center; margin-bottom:24px; }
+  .flowers { font-size:34px; letter-spacing:6px; }
+  h1 { font-family:Georgia,"Times New Roman",serif; font-style:italic; font-weight:400; font-size:28px; margin:6px 0 4px; color:var(--accent); }
+  .sub { color:var(--muted); font-size:14px; margin:0; }
+  .card { display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:22px; padding:14px; margin-bottom:14px; cursor:pointer; transition:transform .1s;
+    box-shadow:0 6px 18px rgba(212,96,127,.10); }
+  .card:active { transform:scale(.98); }
+  .logo { flex:none; width:96px; height:56px; border-radius:14px; background:#fff; border:1px solid var(--line);
+    overflow:hidden; display:grid; place-items:center; }
+  .logo img { width:100%; height:100%; object-fit:contain; }
+  .info { flex:1; min-width:0; }
+  .bank { font-weight:600; font-size:16px; }
+  .holder { color:var(--muted); font-size:13px; margin-top:1px; }
+  .iban { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; margin-top:6px; word-break:break-all; }
+  .btn { flex:none; border:0; border-radius:999px; padding:10px 14px; font-size:14px; font-weight:600;
+    background:var(--accent); color:#fff; cursor:pointer; min-width:92px; }
+  .btn.done { background:var(--ok); }
+  footer { text-align:center; margin-top:22px; color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="flowers">🌸🌷🌹</div>
+    <h1>IBAN Bilgileri</h1>
+    <p class="sub">Karta veya “Kopyala” butonuna dokunarak IBAN’ı kopyalayın.</p>
+  </header>
+  <div id="list"></div>
+  <footer>🌿 Bizi tercih ettiğiniz için teşekkürler 🌿</footer>
+</main>
+
+<script>
+  // ---- BURAYI DÜZENLE ----
+  const HOLDER = "AD SOYAD"; // veya çiçekçi/işletme adı
+  const BANKS = [
+    { name:"Ziraat Bankası", logo:"logo-ziraat.jpg",  iban:"TR00 0000 0000 0000 0000 0000 00" },
+    { name:"Garanti BBVA",   logo:"logo-garanti.webp", iban:"TR00 0000 0000 0000 0000 0000 00" },
+    { name:"QNB",            logo:"logo-qnb.jpg",      iban:"TR00 0000 0000 0000 0000 0000 00" },
+    { name:"İş Bankası",     logo:"logo-isbank.jpg",   iban:"TR00 0000 0000 0000 0000 0000 00" },
+  ];
+  // -------------------------
+
+  const list = document.getElementById("list");
+
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      const t = document.createElement("textarea");
+      t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (_) {}
+      t.remove();
+      return ok;
+    }
+  }
+
+  BANKS.forEach(b => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="logo"><img src="${b.logo}" alt="${b.name}"></div>
+      <div class="info">
+        <div class="bank">${b.name}</div>
+        <div class="holder">${HOLDER}</div>
+        <div class="iban">${b.iban}</div>
+      </div>
+      <button class="btn" type="button">Kopyala</button>`;
+    const btn = card.querySelector(".btn");
+    card.addEventListener("click", async () => {
+      const ok = await copyText(b.iban.replace(/\s+/g, ""));
+      btn.textContent = ok ? "Kopyalandı ✓" : "Hata";
+      btn.classList.toggle("done", ok);
+      setTimeout(() => { btn.textContent = "Kopyala"; btn.classList.remove("done"); }, 1800);
+    });
+    list.appendChild(card);
+  });
+</script>
+</body>
+</html>
