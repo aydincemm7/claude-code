@@ -40,11 +40,11 @@
   // ---- BURAYI DÜZENLE ----
   const HOLDER = "Coşkun Sapan";
   const BANKS = [
-    { name:"Garanti BBVA",   logo:"logo-garanti.webp", iban:"TR15 0006 2000 5730 0006 6705 07" },
+    { name:"Garanti BBVA",   logo:"logo-garanti.webp", holder:"Coşkun Sapan", iban:"TR15 0006 2000 5730 0006 6705 07" },
+    { name:"İş Bankası",     logo:"logo-isbank.jpg",   holder:"Volkan Sapan", iban:"TR43 0006 4000 0011 0970 4167 23" },
     // Stokta hazır, IBAN gelince başındaki // işaretini kaldır:
     // { name:"Ziraat Bankası", logo:"logo-ziraat.jpg", iban:"TR00 0000 0000 0000 0000 0000 00" },
     // { name:"QNB",            logo:"logo-qnb.jpg",    iban:"TR00 0000 0000 0000 0000 0000 00" },
-    // { name:"İş Bankası",     logo:"logo-isbank.jpg", iban:"TR00 0000 0000 0000 0000 0000 00" },
   ];
   // -------------------------
 
@@ -70,7 +70,7 @@
       <div class="logo"><img src="${b.logo}" alt="${b.name}"></div>
       <div class="info">
         <div class="bank">${b.name}</div>
-        <div class="holder">${HOLDER}</div>
+        <div class="holder">${b.holder || HOLDER}</div>
         <div class="iban">${b.iban}</div>
       </div>
       <button class="btn" type="button">Kopyala</button>`;
